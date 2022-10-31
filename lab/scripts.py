@@ -1,12 +1,11 @@
-import csv
-import sqlite3
-import attr
+import csv, json, sqlite3, attr
 
 from contextlib import closing
 from attr import fields
-
+from cattrs import unstructure
 from lab.models import Genus, Plant
-
+from lab.utils import Table, Relation, reduce_rows, columns, alias_map
+from lab.db import make_conn
 
 def import_data():
     plant_prop_map = {"name": "species"}
@@ -89,3 +88,21 @@ def astuple(model, exclude=set()):
 
 def export_data():
     print("exporting data")
+    with make_conn('test.db') as connection:
+        with closing(connection.cursor()) as cur:
+            cur.execute(f'''
+                SELECT {columns(Genus, table='g', alias=alias_map('g', Genus), skip={'species'})},
+                       {columns(Plant, table='p', alias=alias_map('p', Plant))}
+                FROM genus AS g
+                LEFT JOIN plant AS p
+                ON g.id = p.genus_id
+            ''')
+            rows = cur.fetchall()
+            plant_table = Table(prefix='p', row_model=Plant, primary_key='id')
+            genus_table = Table(prefix='g', row_model=Genus, primary_key='id')
+            relations = [
+                Relation(parent=genus_table, child=plant_table, ref_prop='species')
+            ]
+            denormalised = reduce_rows(rows, *relations)[Genus]
+            print(json.dumps(unstructure(denormalised), default=str, indent=4))
+

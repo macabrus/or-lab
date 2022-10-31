@@ -1,4 +1,6 @@
 import sqlite3
+from contextlib import contextmanager
+from lab.utils import dict_factory
 
 
 def init_schema():
@@ -36,3 +38,17 @@ def drop_schema():
     with sqlite3.connect("test.db") as db:
         db.execute("DROP TABLE genus")
         db.execute("DROP TABLE plant")
+
+
+@contextmanager
+def make_conn(url: str):
+    try:
+        con = sqlite3.connect(
+            url,
+            detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES,
+            check_same_thread=False,
+        )
+        con.row_factory = dict_factory
+        yield con
+    finally:
+        con.close()
