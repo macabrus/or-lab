@@ -96,6 +96,7 @@ def alias_map(prefix: str, cls: Any):
 def to_json(obj: Any):
     return json.dumps(obj, indent=4, sort_keys=True, default=str)
 
+
 def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):
@@ -119,4 +120,3 @@ def columns(obj, skip=[], table=None, placeholders=False, alias={}):
     if placeholders:
         props = [f":{prop}" for prop in props]
     return ", ".join(props)
-
