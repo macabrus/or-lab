@@ -1,0 +1,12 @@
+species, genus, petal_count, soil_ph_min, soil_ph_max, temp_min, temp_max, lifespan_years, is_edible, water_content
+Aloe Vera, Aloe, 3, 7, 8.5, 13, 27, 12, True, 0.995 
+Aloe Striata, Aloe, 1, 6, 9, 20, 25, 12, True, 0.995
+Onion, Allium, 6, 6, 7, 12, 23, 2, True, 0.89
+Allium Giganteum, Allium, 6, 5.5, 6.5, -20, 10, 1, True, 0.89
+Papaver somniferum, Papaver, 4, 6.5, 7.5, 5, 13, 0.246, True, 0.3
+Orange, Rutaceae, 5, 6, 7, 23, 32, 55, True, 0.86
+Citrus Limon, Rutaceae, 6, 6, 7, 10, 26.67, 50, True, 0.89
+Ariocarpus fissuratus, Ariocarpus, 25, 7, 7, 26.67, 32.22, 100, False, 0.9
+Magnolia virginiana, Magnolia, 12, 5.5, 6.5, 1, 25, 120, False, 0.5
+Urtica dioica, Urtica, 4, 6, 7, 4, 22.8, 2, False, 0.89
+Malus domestica, Malus, 5, 5.8, 7, 20, 32, 65, True, 0.85

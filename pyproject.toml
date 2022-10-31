@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "lab"
+version = "0.1.0"
+description = ""
+authors = ["Bernard Crnković <bernard.crnkovic@icloud.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+attrs = "^22.1.0"
+cattrs = "^22.2.0"
+
+[tool.poetry.scripts]
+import-data = "lab.scripts:import_data"
+export-data = "lab.scripts:export_data"
+init-schema = "lab.db:init_schema"
+drop-schema = "lab.db:drop_schema"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+flake8 = "^5.0.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
