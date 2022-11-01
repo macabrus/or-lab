@@ -93,7 +93,6 @@ def import_data(args):
             print(row)
         res = db.execute(f"select {csv_props(Plant)} from plant")
         for row in res.fetchall():
-            
             print(row)
     print("Done.")
 

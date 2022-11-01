@@ -3,19 +3,19 @@ repos:
     rev: v1.2.3
     hooks:
       - id: check-yaml
-      - id: trailing-whitespace
+      # - id: trailing-whitespace
       - id: end-of-file-fixer
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        args: ["--profile", "black", '--line-length', '79']
   - repo: https://github.com/psf/black
     rev: 22.10.0
     hooks:
       - id: black
         args: ['--line-length', '79']
         language_version: python3.10
-  - repo: https://github.com/pycqa/isort
-    rev: 5.10.1
-    hooks:
-      - id: isort
-        args: ["--line-length", "79", "--profile", "black"]
   - repo: https://github.com/pycqa/flake8
     rev: 5.0.4  # pick a git hash / tag to point to
     hooks:
