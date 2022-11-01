@@ -1,4 +1,4 @@
-from attr import field, define
+from attr import define, field
 
 
 @define(kw_only=True)

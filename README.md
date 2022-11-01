@@ -15,18 +15,28 @@ Ovaj skup podataka sadrži informacije o biljkama i nekim njihovim svojstvima:
 ```bash
 poetry shell
 poetry install
-init-schema
-import-data
+lab schema init
+lab data import
+
+# Možemo provjeriti podatke u bazi sa:
+sqlite3 -column -header test.db 'select * from plant'
 ```
 
-### Izvoz podataka u JSON formatu
+### Izvoz podataka
 ```bash
-export-schema --json -f data.json
-```
+lab data export -f data.json  # u JSON formatu
+lab data export -f data.csv  # u CSV formatu
 
-### Izvoz podataka u CSV formatu
-```bash
-export-schema --csv -f data.csv
+# izvoz podataka i sheme zajedno
+sqlite3 test.db .dump > dump.sql
+
+# izvoz samo sheme
+sqlite3 test.db .schema > schema.sql
+
+# izvoz podataka bez sheme
+sqlite3 test.db .schema > schema.sql
+sqlite3 test.db .dump > dump.sql
+grep -vx -f schema.sql database.sql > data.sql
 ```
 
 ### Brisanje sheme

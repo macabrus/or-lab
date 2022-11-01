@@ -1,7 +1,7 @@
-import attrs
-from typing import get_origin, Callable, Any
+from typing import Any, Callable, get_origin
 
-from attrs import define, fields, field
+import attrs
+from attrs import define, field, fields
 
 
 @define(kw_only=True, hash=True)

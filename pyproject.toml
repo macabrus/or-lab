@@ -11,11 +11,7 @@ attrs = "^22.1.0"
 cattrs = "^22.2.0"
 
 [tool.poetry.scripts]
-import-data = "lab.scripts:import_data"
-export-data = "lab.scripts:export_data"
-init-schema = "lab.db:init_schema"
-drop-schema = "lab.db:drop_schema"
-
+lab = "lab.scripts:start"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"

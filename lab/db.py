@@ -1,10 +1,11 @@
 import sqlite3
 from contextlib import contextmanager
+
 from lab.utils import dict_factory
 
 
-def init_schema():
-    with sqlite3.connect("test.db") as db:
+def init_schema(args):
+    with make_conn(args.database) as db, open_txn(db):
         db.execute(
             """
         CREATE TABLE genus(
@@ -34,8 +35,8 @@ def init_schema():
         )
 
 
-def drop_schema():
-    with sqlite3.connect("test.db") as db:
+def drop_schema(args):
+    with make_conn(args.database) as db, open_txn(db):
         db.execute("DROP TABLE genus")
         db.execute("DROP TABLE plant")
 
