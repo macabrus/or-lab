@@ -43,3 +43,9 @@ grep -vx -f schema.sql database.sql > data.sql
 ```bash
 lab schema drop
 ```
+
+### Source formatting
+Koristim `black` za formatiranje source koda i `isort` sa organizaciju importova:
+```bash
+black lab && isort lab
+```

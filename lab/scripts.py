@@ -11,6 +11,7 @@ from cattrs import structure, unstructure
 
 from lab.db import drop_schema, init_schema, make_conn, open_txn
 from lab.models import Genus, Plant
+from lab.sql import *
 from lab.utils import (Relation, Table, alias_map, astuple, columns,
                        csv_placeholders, csv_props, reduce_rows)
 
@@ -69,18 +70,11 @@ def import_data(args):
             genus, plant = row[Genus], row[Plant]
             if genus.name not in id_map:
                 res = db.execute(
-                    f"""
-                    INSERT INTO genus({csv_props(Genus, skip={'id', 'species'})})
-                    VALUES ({csv_placeholders(Genus, skip={'id', 'species'})})
-                    """,
-                    astuple(genus, skip={"id", "species"}),
+                    INSERT_GENUS_SQL, astuple(genus, skip={"id", "species"})
                 )
                 id_map[genus.name] = res.lastrowid
             res = db.execute(
-                f"""
-                INSERT INTO plant(genus_id, {csv_props(Plant, skip={'id'})})
-                VALUES (?, {csv_placeholders(Plant, skip={'id'})})
-                """,
+                INSERT_PLANT_SQL,
                 (id_map[genus.name], *astuple(plant, skip={"id"})),
             )
             id_map[plant.name] = res.lastrowid
@@ -94,12 +88,6 @@ def import_data(args):
     print("Done.")
 
 
-def export_sql(args):
-    with make_conn(args.database) as db, open(args.file, "w") as f:
-        for line in db.iterdump():
-            f.write(line + os.linesep)
-
-
 def export_csv(args, data):
     inv_genus_map = {v: k for k, v in alias_map("g", Genus).items()}
     inv_plant_map = {v: k for k, v in alias_map("p", Plant).items()}
@@ -107,8 +95,8 @@ def export_csv(args, data):
 
     csv_fields = {f.name for f in fields(Genus)}
     csv_fields |= {f.name for f in fields(Plant)}
-    csv_fields |= {'species', 'genus'}
-    csv_fields -= {"id", 'name'}
+    csv_fields |= {"species", "genus"}
+    csv_fields -= {"id", "name"}
 
     with open(args.file, "w") as f:
         writer = csv.DictWriter(
@@ -133,20 +121,9 @@ def export_data(args):
     if os.path.isfile(args.file):
         print(f"File '{args.file}' already exists. Skipping.")
         return
-    if args.file.endswith(".sql"):
-        export_sql(args)
-        return
 
     with make_conn(args.database) as db, open_txn(db):
-        rows = db.execute(
-            f"""
-            SELECT {columns(Genus, table='g', alias=alias_map('g', Genus), skip={'species'})},
-                   {columns(Plant, table='p', alias=alias_map('p', Plant))}
-            FROM genus AS g
-            LEFT JOIN plant AS p
-            ON g.id = p.genus_id
-        """
-        ).fetchall()
+        rows = db.execute(SELECT_GENUS_PLANT_SQL).fetchall()
 
     if args.file.endswith(".json"):
         export_json(args, rows)
