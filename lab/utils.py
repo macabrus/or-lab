@@ -120,3 +120,19 @@ def columns(obj, skip=[], table=None, placeholders=False, alias={}):
     if placeholders:
         props = [f":{prop}" for prop in props]
     return ", ".join(props)
+
+
+def csv_props(model, skip=set()):
+    return ", ".join(f.name for f in fields(model) if f.name not in skip)
+
+
+def csv_placeholders(model, skip=set()):
+    return ", ".join("?" for f in fields(model) if f.name not in skip)
+
+
+def astuple(model, skip=set()):
+    return tuple(
+        getattr(model, prop.name)
+        for prop in fields(type(model))
+        if prop.name not in skip
+    )

@@ -52,3 +52,15 @@ def make_conn(url: str):
         yield con
     finally:
         con.close()
+
+
+@contextmanager
+def open_txn(db):
+    try:
+        # db.cursor()
+        db.execute("BEGIN")
+        yield
+        db.execute("COMMIT")
+    except Exception as e:
+        db.execute("ROLLBACK")
+        raise e

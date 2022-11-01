@@ -11,14 +11,25 @@ Ovaj skup podataka sadrži informacije o biljkama i nekim njihovim svojstvima:
 - `is_edible` - istinosna vrijednost koja označava je li biljka jestiva za ljude
 - `water_content` - decimalna vrijednost u rasponu od 0 do 1 koja označava prosječan udio vode u biljci
 
-### Running project
+### Pokretanje projekta
 ```bash
+poetry shell
 poetry install
-poetry run init-schema
-poetry run import-data
+init-schema
+import-data
 ```
 
-### To drop schema
+### Izvoz podataka u JSON formatu
 ```bash
-poetry run drop-schema
+export-schema --json -f data.json
+```
+
+### Izvoz podataka u CSV formatu
+```bash
+export-schema --csv -f data.csv
+```
+
+### Brisanje sheme
+```bash
+drop-schema
 ```
