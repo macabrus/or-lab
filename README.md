@@ -41,5 +41,5 @@ grep -vx -f schema.sql database.sql > data.sql
 
 ### Brisanje sheme
 ```bash
-drop-schema
+lab schema drop
 ```
