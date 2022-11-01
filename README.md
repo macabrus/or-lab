@@ -45,7 +45,11 @@ lab schema drop
 ```
 
 ### Source formatting
-Koristim `black` za formatiranje source koda i `isort` sa organizaciju importova:
+Koristim `black` za formatiranje source koda i `isort`
+za organizaciju importova kroz `pre-commit` framework
+čija se konfiguracija nalazi u `.pre-commit-config.yaml`.
+Taj alat se automatski pokreće na commit, no može se i 
+eksplicitno pokrenuti sa:
 ```bash
-black lab && isort lab
+pre-commit run -a
 ```
