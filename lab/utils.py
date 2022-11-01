@@ -67,7 +67,8 @@ def reduce_rows(rows, *relations: Relation):
                 continue
             parent_id = getattr(parent_entity, rel.parent.primary_key)
             child_id = getattr(child_entity, rel.child.primary_key)
-            # in case of null left/right joins, dont make relations with all null tables
+            # in case of null left/right joins,
+            # dont make relations with all null tables
             if parent_id is None or child_id is None:
                 continue
             ref_prop = rel.ref_prop
@@ -91,10 +92,6 @@ def reduce_rows(rows, *relations: Relation):
 def alias_map(prefix: str, cls: Any):
     props = [prop.name for prop in fields(cls)]
     return {prop: f"{prefix}_{prop}" for prop in props}
-
-
-def to_json(obj: Any):
-    return json.dumps(obj, indent=4, sort_keys=True, default=str)
 
 
 def dict_factory(cursor, row):

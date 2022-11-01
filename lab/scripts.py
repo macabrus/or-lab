@@ -2,18 +2,21 @@ import argparse
 import csv
 import json
 import os
-import sqlite3
-from contextlib import closing
 
-import attr
 from attr import fields
 from cattrs import structure, unstructure
 
 from lab.db import drop_schema, init_schema, make_conn, open_txn
 from lab.models import Genus, Plant
-from lab.sql import *
-from lab.utils import (Relation, Table, alias_map, astuple, columns,
-                       csv_placeholders, csv_props, reduce_rows)
+from lab.sql import INSERT_GENUS_SQL, INSERT_PLANT_SQL, SELECT_GENUS_PLANT_SQL
+from lab.utils import (
+    Relation,
+    Table,
+    alias_map,
+    astuple,
+    csv_props,
+    reduce_rows,
+)
 
 
 def load_csv(args) -> list[Genus]:
@@ -21,13 +24,15 @@ def load_csv(args) -> list[Genus]:
     genus_prop_map = {"name": "genus"}
     plant_prop_ignore = ("id",)
     genus_prop_ignore = ("id", "species")
-    plant_id = ("name",)
-    genus_id = ("name",)
+    # plant_id = ("name",)
+    # genus_id = ("name",)
     model_rows = []
 
     # load csv into models
     with open(args.file, newline="") as f:
-        reader = csv.DictReader(f, delimiter=",", quotechar="'", skipinitialspace=True)
+        reader = csv.DictReader(
+            f, delimiter=",", quotechar="'", skipinitialspace=True
+        )
         for row in reader:
             plant_dict = {}
             for prop in fields(Plant):
@@ -43,7 +48,9 @@ def load_csv(args) -> list[Genus]:
                 csv_prop = genus_prop_map.get(prop.name, prop.name)
                 genus_dict[prop.name] = prop.type(row[csv_prop])
             print(Genus(**genus_dict))
-            model_rows.append({Genus: Genus(**genus_dict), Plant: Plant(**plant_dict)})
+            model_rows.append(
+                {Genus: Genus(**genus_dict), Plant: Plant(**plant_dict)}
+            )
     return model_rows
 
 
@@ -79,7 +86,9 @@ def import_data(args):
             )
             id_map[plant.name] = res.lastrowid
         # check insertions
-        res = db.execute(f"select {csv_props(Genus, skip={'species'})} from genus")
+        res = db.execute(
+            f"select {csv_props(Genus, skip={'species'})} from genus"
+        )
         for row in res.fetchall():
             print(row)
         res = db.execute(f"select {csv_props(Plant)} from plant")
@@ -91,7 +100,11 @@ def import_data(args):
 def export_csv(args, data):
     inv_genus_map = {v: k for k, v in alias_map("g", Genus).items()}
     inv_plant_map = {v: k for k, v in alias_map("p", Plant).items()}
-    renames = inv_genus_map | inv_plant_map | {"g_name": "genus", "p_name": "species"}
+    renames = (
+        inv_genus_map
+        | inv_plant_map
+        | {"g_name": "genus", "p_name": "species"}
+    )
 
     csv_fields = {f.name for f in fields(Genus)}
     csv_fields |= {f.name for f in fields(Plant)}
@@ -100,18 +113,28 @@ def export_csv(args, data):
 
     with open(args.file, "w") as f:
         writer = csv.DictWriter(
-            f, csv_fields, delimiter=",", quotechar="'", quoting=csv.QUOTE_MINIMAL
+            f,
+            csv_fields,
+            delimiter=",",
+            quotechar="'",
+            quoting=csv.QUOTE_MINIMAL,
         )
         writer.writeheader()
         for row in data:
-            row = {renames[k]: v for k, v in row.items() if renames[k] in csv_fields}
+            row = {
+                renames[k]: v
+                for k, v in row.items()
+                if renames[k] in csv_fields
+            }
             writer.writerow(row)
 
 
 def export_json(args, data):
     table_plant = Table(prefix="p", row_model=Plant, primary_key="id")
     table_genus = Table(prefix="g", row_model=Genus, primary_key="id")
-    relations = (Relation(parent=table_genus, child=table_plant, ref_prop="species"),)
+    relations = (
+        Relation(parent=table_genus, child=table_plant, ref_prop="species"),
+    )
     denormalised = reduce_rows(data, *relations)[Genus]
     with open(args.file, "w") as f:
         f.write(json.dumps(unstructure(denormalised), indent=4))
@@ -132,21 +155,35 @@ def export_data(args):
 
 
 def start():
-    parser = argparse.ArgumentParser(description="Alat za otvoreno računarstvo")
+    parser = argparse.ArgumentParser(
+        description="Alat za otvoreno računarstvo"
+    )
     subparsers = parser.add_subparsers(dest="command")
 
     schema_parser = subparsers.add_parser("schema")
     schema_parser.add_argument(
-        "--database", "-d", type=str, default="test.db", help="(default: %(default)s)"
+        "--database",
+        "-d",
+        type=str,
+        default="test.db",
+        help="(default: %(default)s)",
     )
     schema_parser.add_argument("action", choices=["init", "drop"])
 
     data_parser = subparsers.add_parser("data")
     data_parser.add_argument(
-        "--database", "-d", type=str, default="test.db", help="(default: %(default)s)"
+        "--database",
+        "-d",
+        type=str,
+        default="test.db",
+        help="(default: %(default)s)",
     )
     data_parser.add_argument(
-        "--file", "-f", type=str, default="biljke.csv", help="(default: %(default)s)"
+        "--file",
+        "-f",
+        type=str,
+        default="biljke.csv",
+        help="(default: %(default)s)",
     )
     data_parser.add_argument("action", choices=["import", "export"])
 

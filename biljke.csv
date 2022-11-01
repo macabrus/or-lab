@@ -1,5 +1,5 @@
 species, genus, petal_count, soil_ph_min, soil_ph_max, temp_min, temp_max, lifespan_years, is_edible, water_content
-Aloe Vera, Aloe, 3, 7, 8.5, 13, 27, 12, True, 0.995 
+Aloe Vera, Aloe, 3, 7, 8.5, 13, 27, 12, True, 0.995
 Aloe Striata, Aloe, 1, 6, 9, 20, 25, 12, True, 0.995
 Onion, Allium, 6, 6, 7, 12, 23, 2, True, 0.89
 Allium Giganteum, Allium, 6, 5.5, 6.5, -20, 10, 1, True, 0.89

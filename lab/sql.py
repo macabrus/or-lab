@@ -12,7 +12,7 @@ VALUES (?, {csv_placeholders(Plant, skip={'id'})})
 """
 
 SELECT_GENUS_PLANT_SQL = f"""
-SELECT 
+SELECT
     {columns(Genus, table='g', alias=alias_map('g', Genus), skip={'species'})},
     {columns(Plant, table='p', alias=alias_map('p', Plant))}
 FROM genus AS g

@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.10"
 attrs = "^22.1.0"
 cattrs = "^22.2.0"
+pre-commit = "^2.20.0"
 
 [tool.poetry.scripts]
 lab = "lab.scripts:start"

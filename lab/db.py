@@ -1,7 +1,7 @@
 import sqlite3
 from contextlib import contextmanager
 
-from lab.sql import *
+from lab.sql import CREATE_GENUS, CREATE_PLANT, DROP_GENUS, DROP_PLANT
 from lab.utils import dict_factory
 
 
