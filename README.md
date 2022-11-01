@@ -48,7 +48,7 @@ lab schema drop
 Koristim `black` za formatiranje source koda i `isort`
 za organizaciju importova kroz `pre-commit` framework
 čija se konfiguracija nalazi u `.pre-commit-config.yaml`.
-Taj alat se automatski pokreće na commit, no može se i 
+Taj alat se automatski pokreće na commit, no može se i
 eksplicitno pokrenuti sa:
 ```bash
 pre-commit run -a
