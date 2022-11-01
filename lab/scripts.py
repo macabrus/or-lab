@@ -90,10 +90,10 @@ def export_data():
             ON g.id = p.genus_id
         """
         ).fetchall()
-        plant_table = Table(prefix="p", row_model=Plant, primary_key="id")
-        genus_table = Table(prefix="g", row_model=Genus, primary_key="id")
-        relations = [
-            Relation(parent=genus_table, child=plant_table, ref_prop="species")
-        ]
+        table_plant = Table(prefix="p", row_model=Plant, primary_key="id")
+        table_genus = Table(prefix="g", row_model=Genus, primary_key="id")
+        relations = (
+            Relation(parent=table_genus, child=table_plant, ref_prop="species"),
+        )
         denormalised = reduce_rows(rows, *relations)[Genus]
         print(json.dumps(unstructure(denormalised), default=str, indent=4))
