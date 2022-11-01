@@ -103,22 +103,21 @@ def export_sql(args):
 def export_csv(args, data):
     inv_genus_map = {v: k for k, v in alias_map("g", Genus).items()}
     inv_plant_map = {v: k for k, v in alias_map("p", Plant).items()}
-    renames = {"g_name": "genus", "p_name": "species"} | inv_genus_map | inv_plant_map
+    renames = inv_genus_map | inv_plant_map | {"g_name": "genus", "p_name": "species"}
 
     csv_fields = {f.name for f in fields(Genus)}
     csv_fields |= {f.name for f in fields(Plant)}
-    csv_fields.remove("id")
-    csv_fields.remove("species")
+    csv_fields |= {'species', 'genus'}
+    csv_fields -= {"id", 'name'}
 
-    skip = {"g_id", "p_id"}
     with open(args.file, "w") as f:
-        # TODO
         writer = csv.DictWriter(
             f, csv_fields, delimiter=",", quotechar="'", quoting=csv.QUOTE_MINIMAL
         )
+        writer.writeheader()
         for row in data:
-            row = {renames[k]: v for k, v in row.items()}
-            writer.write_row(row)
+            row = {renames[k]: v for k, v in row.items() if renames[k] in csv_fields}
+            writer.writerow(row)
 
 
 def export_json(args, data):
