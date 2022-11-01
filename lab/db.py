@@ -1,44 +1,20 @@
 import sqlite3
 from contextlib import contextmanager
 
+from lab.sql import *
 from lab.utils import dict_factory
 
 
 def init_schema(args):
     with make_conn(args.database) as db, open_txn(db):
-        db.execute(
-            """
-        CREATE TABLE genus(
-            id INTEGER PRIMARY KEY,
-            name TEXT UNIQUE NOT NULL
-        )
-        """
-        )
-        db.execute(
-            """
-        CREATE TABLE plant(
-            id INTEGER PRIMARY KEY,
-            genus_id INTEGER,
-            name TEXT UNIQUE NOT NULL,
-            petal_count INTEGER,
-            lifespan_years REAL,
-            soil_ph_min REAL,
-            soil_ph_max REAL,
-            temp_min REAL,
-            temp_max REAL,
-            is_edible BOOLEAN,
-            water_content REAL,
-
-            FOREIGN KEY (genus_id) REFERENCES genus(id) ON DELETE CASCADE
-        )
-        """
-        )
+        db.execute(CREATE_GENUS)
+        db.execute(CREATE_PLANT)
 
 
 def drop_schema(args):
     with make_conn(args.database) as db, open_txn(db):
-        db.execute("DROP TABLE genus")
-        db.execute("DROP TABLE plant")
+        db.execute(DROP_GENUS)
+        db.execute(DROP_PLANT)
 
 
 @contextmanager
