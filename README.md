@@ -36,7 +36,7 @@ sqlite3 test.db .schema > schema.sql
 # izvoz podataka bez sheme
 sqlite3 test.db .schema > schema.sql
 sqlite3 test.db .dump > dump.sql
-grep -vx -f schema.sql database.sql > data.sql
+grep -vx -f schema.sql dump.sql > data.sql
 ```
 
 ### Brisanje sheme
