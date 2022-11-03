@@ -7,7 +7,7 @@ from attrs import define, field, fields
 @define(kw_only=True, hash=True)
 class Table:
     prefix: str
-    row_model: Any
+    row_model: Any  # model representing row in database
     primary_key: str
     mapper: Callable = field(default=lambda o: o, hash=False)
 
@@ -101,7 +101,9 @@ def dict_factory(cursor, row):
     return d
 
 
-def columns(obj, skip=[], table=None, placeholders=False, alias={}):
+def columns(
+    obj, skip=[], table=None, prefix=None, placeholders=False, alias={}
+):
     props = []
     if isinstance(obj, dict):
         props = obj.values()
@@ -111,6 +113,8 @@ def columns(obj, skip=[], table=None, placeholders=False, alias={}):
         raise ValueError("Unknown type")
     props = filter(lambda prop: prop not in skip, props)
     if not placeholders:
+        if prefix:
+            alias = alias_map(prefix, obj)
         props = map(lambda p: f"{p} as {alias[p]}" if p in alias else p, props)
     if table:
         props = map(lambda prop: f"{table}.{prop}", props)

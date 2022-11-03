@@ -146,6 +146,7 @@ def export_data(args):
         return
 
     with make_conn(args.database) as db, open_txn(db):
+        print(SELECT_GENUS_PLANT_SQL)
         rows = db.execute(SELECT_GENUS_PLANT_SQL).fetchall()
 
     if args.file.endswith(".json"):
