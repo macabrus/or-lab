@@ -44,6 +44,22 @@ grep -vx -f schema.sql dump.sql > data.sql
 lab schema drop
 ```
 
+### Frontend i backend (TODO)
+Potrebno je pripremiti production build frontenda:
+```bash
+cd frontend
+npm i
+npm build
+cd ..
+```
+
+Flask će servirati SolidJS frontend/dist/ bundle folder kao statički content u web root (`/`). SolidJS će komunicirati s Flask API-jem preko `fetch` za dohvaćanje podataka.
+Tada se može pokrenuti s:
+```bash
+lab web      # default port 80
+lab web 8080 # specify port
+```
+
 ### Source formatting
 Koristim `black` za formatiranje source koda i `isort`
 za organizaciju importova kroz `pre-commit` framework
