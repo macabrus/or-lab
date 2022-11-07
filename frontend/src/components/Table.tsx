@@ -1,3 +1,4 @@
+import './Table.module.css';
 import { createEffect, createMemo, createResource, createSignal, For } from "solid-js";
 
 function encodeQueryParams(p: any) {
