@@ -1,4 +1,8 @@
+import codecs
+import json
+from base64 import b64decode, b64encode
 from typing import Any, Callable, get_origin
+from urllib.parse import quote, unquote
 
 import attrs
 from attrs import define, field, fields
@@ -137,3 +141,21 @@ def astuple(model, skip=set()):
         for prop in fields(type(model))
         if prop.name not in skip
     )
+
+
+def encode_query_object(obj: dict):
+    str_obj = json.dumps(obj, sort_keys=True)
+    zipped_str = codecs.encode(str_obj.encode("utf8"), "zlib")
+    b64_str = b64encode(zipped_str).decode("utf8")
+    url_enc = quote(b64_str)
+    return url_enc
+
+
+def decode_query_object(text: str):
+    if text is None:
+        return text
+    url_decoded = unquote(text)
+    b64_decoded = b64decode(url_decoded)
+    unzipped = codecs.decode(b64_decoded, "zlib")
+    str_decoded = unzipped.decode("utf8")
+    return json.loads(str_decoded)

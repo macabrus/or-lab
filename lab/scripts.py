@@ -15,6 +15,8 @@ from lab.utils import (
     alias_map,
     astuple,
     csv_props,
+    decode_query_object,
+    encode_query_object,
     reduce_rows,
 )
 
@@ -155,6 +157,20 @@ def export_data(args):
         export_csv(args, rows)
 
 
+def encode_query_params(args):
+    print(encode_query_object(json.loads(args.data)))
+
+
+def decode_query_params(args):
+    print(decode_query_object(args.data))
+
+
+def serve_web(args):
+    from .web import app
+
+    app.run(port=args.port, debug=args.debug)
+
+
 def start():
     parser = argparse.ArgumentParser(
         description="Alat za otvoreno računarstvo"
@@ -188,6 +204,14 @@ def start():
     )
     data_parser.add_argument("action", choices=["import", "export"])
 
+    web_parser = subparsers.add_parser("web")
+    web_parser.add_argument("port", nargs="?", default=8080)
+    web_parser.add_argument("--debug", action="store_true", default=False)
+
+    query_parser = subparsers.add_parser("query")
+    query_parser.add_argument("action", choices=["encode", "decode"])
+    query_parser.add_argument("data")
+
     args = parser.parse_args()
 
     if "schema" == args.command:
@@ -200,3 +224,10 @@ def start():
             import_data(args)
         elif "export" == args.action:
             export_data(args)
+    elif "web" == args.command:
+        serve_web(args)
+    elif "query" == args.command:
+        if "encode" == args.action:
+            encode_query_params(args)
+        elif "decode" == args.action:
+            decode_query_params(args)

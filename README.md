@@ -60,6 +60,22 @@ lab web      # default port 80
 lab web 8080 # specify port
 ```
 
+### Kodiranje URI parametara
+REST upite možemo testirati s `curl`. Parametre upita u URL-u
+možemo kodirati u format koji backend očekuje s:
+```bash
+lab query encode '{"example": "json"}'
+lab query decode eJyrVkqtSMwtyElVslJQyirOz1OqBQBCVwaB
+```
+Odlučio sam se za ovaj pristup sa kompresiranjem URI parametara
+kako bi upiti i dalje ostali GET i očuvali semantičko značenje.
+Pošto nije uobičajeno slati tijelo u GET upitima,
+posegnuo sam za kompresijom URL parametara.
+Filtriranje i paginacija podataka zapravo jest operacija čitanja (READ),
+te ne mijenja podatke, te bi ona _trebala_ biti GET upit.
+Operacije su i dalje idempotentne i _cacheable_
+samo su URI manje razumljivi čitatelju.
+
 ### Source formatting
 Koristim `black` za formatiranje source koda i `isort`
 za organizaciju importova kroz `pre-commit` framework
