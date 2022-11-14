@@ -26,6 +26,8 @@ def make_conn(url: str):
             check_same_thread=False,
         )
         con.row_factory = dict_factory
+        sqlite3.register_adapter(bool, int)
+        sqlite3.register_converter("BOOLEAN", lambda v: bool(int(v)))
         yield con
     finally:
         con.close()
@@ -34,10 +36,10 @@ def make_conn(url: str):
 @contextmanager
 def open_txn(db):
     try:
-        # db.cursor()
-        db.execute("BEGIN")
-        yield
-        db.execute("COMMIT")
+        cur = db.cursor()
+        cur.execute("BEGIN")
+        yield cur
+        cur.execute("COMMIT")
     except Exception as e:
-        db.execute("ROLLBACK")
+        cur.execute("ROLLBACK")
         raise e

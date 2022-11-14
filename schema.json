@@ -1,0 +1,123 @@
+{
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [
+        "id",
+        "genus_id",
+        "name",
+        "petal_count",
+        "lifespan_years",
+        "soil_ph_min",
+        "soil_ph_max",
+        "temp_min",
+        "temp_max",
+        "is_edible",
+        "water_content"
+    ],
+    "properties": {
+        "id": {
+            "type": "integer",
+            "default": 0,
+            "title": "The id Schema",
+            "examples": [
+                11
+            ]
+        },
+        "genus_id": {
+            "type": "integer",
+            "default": 0,
+            "title": "The genus_id Schema",
+            "examples": [
+                8
+            ]
+        },
+        "name": {
+            "type": "string",
+            "default": "",
+            "title": "The name Schema",
+            "examples": [
+                "Malus domestica"
+            ]
+        },
+        "petal_count": {
+            "type": "integer",
+            "default": 0,
+            "title": "The petal_count Schema",
+            "examples": [
+                5
+            ]
+        },
+        "lifespan_years": {
+            "type": "number",
+            "default": 0.0,
+            "title": "The lifespan_years Schema",
+            "examples": [
+                65.0
+            ]
+        },
+        "soil_ph_min": {
+            "type": "number",
+            "default": 0.0,
+            "title": "The soil_ph_min Schema",
+            "examples": [
+                5.8
+            ]
+        },
+        "soil_ph_max": {
+            "type": "number",
+            "default": 0.0,
+            "title": "The soil_ph_max Schema",
+            "examples": [
+                7.0
+            ]
+        },
+        "temp_min": {
+            "type": "number",
+            "default": 0.0,
+            "title": "The temp_min Schema",
+            "examples": [
+                20.0
+            ]
+        },
+        "temp_max": {
+            "type": "number",
+            "default": 0.0,
+            "title": "The temp_max Schema",
+            "examples": [
+                32.0
+            ]
+        },
+        "is_edible": {
+            "type": "boolean",
+            "default": false,
+            "title": "The is_edible Schema",
+            "examples": [
+                true
+            ]
+        },
+        "water_content": {
+            "type": "number",
+            "default": 0.0,
+            "title": "The water_content Schema",
+            "examples": [
+                0.85
+            ]
+        }
+    },
+    "examples": [{
+        "id": 11,
+        "genus_id": 8,
+        "name": "Malus domestica",
+        "petal_count": 5,
+        "lifespan_years": 65.0,
+        "soil_ph_min": 5.8,
+        "soil_ph_max": 7.0,
+        "temp_min": 20.0,
+        "temp_max": 32.0,
+        "is_edible": true,
+        "water_content": 0.85
+    }]
+}
