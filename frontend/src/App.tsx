@@ -3,18 +3,21 @@ import { lazy } from 'solid-js';
 import { Routes, Route, A } from "@solidjs/router"
 
 
-const About = lazy(() => import("./pages/About"));
+const Home = lazy(() => import("./pages/Home"));
 const Dataset = lazy(() => import("./pages/Dataset"));
+const Schema = lazy(() => import("./pages/Schema"));
 
 const App: Component = () => {
   return (<>
     <nav>
-      <A href="/about">About</A>
+      <A href="/home">Home</A>
       <A href="/">Biljke</A>
+      <A href='/schema'>Shema</A>
     </nav>
     <Routes>
-      <Route path="/about" component={About} />
+      <Route path="/home" component={Home} />
       <Route path="/" component={Dataset} />
+      <Route path="/schema" component={Schema} />
       {/* <Route path="/about" element={<div>This site was made with Solid</div>} /> */}
     </Routes>
   </>)
