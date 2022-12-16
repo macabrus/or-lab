@@ -31,6 +31,9 @@ export function PlantForm (props: any) {
               <option value={field}>{startCase(field)}</option>
           }</For>
       </select>
+      <Show when={filterField()}>
+        <input value={filterValue()} onInput={e => setFilterValue(e.currentTarget.value)}></input>
+      </Show>
     </div>
     <div>
       <label for="pageSize">Veličina stranice</label>
@@ -42,11 +45,8 @@ export function PlantForm (props: any) {
       </select>
     </div>
     <div>
-      <span>Stranica: <button onClick={previous}>&lt;</button> {page()}<button onClick={next}>&gt;</button></span>
+      <span>Stranica: <button onClick={previous}>◀</button> {page()}<button onClick={next}>▶</button></span>
     </div>
-    <Show when={filterField()}>
-      <input value={filterValue()} onInput={e => setFilterValue(e.currentTarget.value)}></input>
-    </Show>
   </>
 }
 

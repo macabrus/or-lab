@@ -1,4 +1,4 @@
-from attr import define, field
+from attr import define, field, fields, make_class
 
 
 @define(kw_only=True)
@@ -13,6 +13,28 @@ class Plant:
     temp_max: float
     is_edible: bool
     water_content: float
+
+
+skip_fields = {"id"}
+CreatePlant = make_class(
+    "CreatePlant",
+    {"genus_id": field(default=None)}
+    | {
+        f.name: field(default=None)
+        for f in fields(Plant)
+        if f.name not in skip_fields
+    },
+)
+
+UpdatePlant = make_class(
+    "UpdatePlant",
+    {"genus_id": field(default=None)}
+    | {
+        f.name: field(default=None)
+        for f in fields(Plant)
+        if f.name not in skip_fields
+    },
+)
 
 
 @define(kw_only=True)

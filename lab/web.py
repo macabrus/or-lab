@@ -3,12 +3,14 @@ from csv import DictWriter
 from io import StringIO
 
 from attr import define, fields
-from flask import Flask, Response, jsonify, request, stream_with_context
+from cattrs import structure, unstructure
+from flask import Flask, Response, request, stream_with_context
 from flask_cors import CORS
 
 from lab.db import make_conn, open_txn
-from lab.models import Plant
-from lab.utils import decode_query_object
+from lab.models import CreatePlant, Plant, UpdatePlant
+from lab.sql import INSERT_PLANT_SQL
+from lab.utils import astuple, decode_query_object
 
 app = Flask(__name__)
 # enable cors when serving from dev server in nodejs
@@ -26,6 +28,27 @@ def make_where_clause(filter_obj):
             where.append(f"LOWER({prop}) LIKE LOWER(?)")
             params.append(f"%{filter_obj['*']}%")
     return " OR ".join(where), params
+
+
+def make_set_clause(patch_obj):
+    print("Patch obj", patch_obj)
+    updated_fields = []
+    for f in fields(UpdatePlant):
+        value = getattr(patch_obj, f.name, None)
+        if value is None:
+            continue
+        updated_fields.append(f.name)
+    print(updated_fields)
+    available_fields = field_names(Plant)
+    clause = []
+    params = []
+    for f in updated_fields:
+        if f not in available_fields:
+            continue
+        clause.append(f"{f} = ?")
+        params.append(getattr(patch_obj, f))
+    print(available_fields)
+    return ", ".join(clause), params
 
 
 def field_names(model):
@@ -59,11 +82,19 @@ def download_as_file(format):
     def stream_json():
         with make_conn("test.db") as db, open_txn(db) as cur:
             yield "["
-            for i, row in enumerate(cur.execute(sql, params), start=1):
-                sep = ","
-                if i == cur.rowcount:
-                    sep = ""
-                yield json.dumps(row) + sep
+            cur.execute(sql, params)
+            rows = cur.fetchmany()
+            print(len(rows))
+            while True:
+                if not rows:
+                    break
+                yield ",".join(map(json.dumps, rows))
+                tmp_rows = cur.fetchmany()
+                if tmp_rows:
+                    yield ","
+                    rows = tmp_rows
+                else:
+                    break
             yield "]"
 
     def stream_csv():
@@ -139,4 +170,68 @@ def get_plants():
     print(params)
 
     with make_conn("test.db") as db:
-        return jsonify(db.execute(sql, params).fetchall())
+        return db.execute(sql, params).fetchall(), 200
+
+
+@app.get("/api/plant/<int:id>")
+def get_plant(id):
+    sql = "select * from plant where rowid = ?"
+    with make_conn("test.db") as db:
+        row = db.execute(sql, (id,)).fetchone()
+    if not row:
+        return {
+            "status": 404,
+            "message": "Plant not found",
+            "detail": None,
+        }, 404
+    return row, 200
+
+
+@app.post("/api/plant")
+def add_plant():
+    new_plant = structure(request.json, CreatePlant)
+    print(new_plant)
+    with make_conn("test.db") as db, open_txn(db) as db:
+        db.execute(
+            INSERT_PLANT_SQL,
+            astuple(new_plant, skip={"id"}),
+        )
+    return {
+        "status": 201,
+        "message": "Plant added successfully",
+        "detail": unstructure(new_plant),
+    }, 201
+
+
+@app.delete("/api/plant/<int:id>")
+def remove_plant(id):
+    with make_conn("test.db") as db:
+        row = db.execute(
+            "delete from plant where id = ? returning *", (id,)
+        ).fetchone()
+    if not row:
+        return {
+            "status": 404,
+            "message": "Plant not found",
+            "details": None,
+        }, 404
+    return {"status": 200, "message": "Removed plant", "details": row}, 200
+
+
+@app.patch("/api/plant/<int:id>")
+def update_plant(id):
+    update_dto = structure(request.json, UpdatePlant)
+    clause, params = make_set_clause(update_dto)
+    print(clause, params)
+    if not params:
+        return {
+            "status": 400,
+            "message": "Expected fields to update",
+            "details": None,
+        }, 400
+    with make_conn("test.db") as db, open_txn(db) as db:
+        row = db.execute(
+            f"update plant set {clause} where id = ? returning *",
+            (*params, id),
+        ).fetchone()
+    return row, 200

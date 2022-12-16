@@ -43,7 +43,7 @@ export default function Table (props: any) {
             (column, id) =>
               <th>
                 <span>{startCase(column)}</span>
-                <button>{orderingLabels[ordering()[id()]]}</button>
+                {/* <button>{orderingLabels[ordering()[id()]]} ▲▼●</button> */}
               </th>
           }</For>
         </thead>

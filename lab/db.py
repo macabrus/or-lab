@@ -30,6 +30,7 @@ def make_conn(url: str):
         sqlite3.register_converter("BOOLEAN", lambda v: bool(int(v)))
         yield con
     finally:
+        con.commit()
         con.close()
 
 
