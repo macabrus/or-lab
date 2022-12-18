@@ -1,10 +1,17 @@
 import json
+import os
 from csv import DictWriter
 from io import StringIO
 
 from attr import define, fields
 from cattrs import structure, unstructure
-from flask import Flask, Response, request, stream_with_context
+from flask import (
+    Flask,
+    Response,
+    request,
+    send_from_directory,
+    stream_with_context,
+)
 from flask_cors import CORS
 
 from lab.db import make_conn, open_txn
@@ -14,7 +21,7 @@ from lab.utils import astuple, decode_query_object
 
 app = Flask(__name__)
 # enable cors when serving from dev server in nodejs
-CORS(app, origins=["http://localhost:3000"])
+CORS(app, origins=["http://localhost:3000", "http://localhost:8000"])
 
 
 def make_where_clause(filter_obj):
@@ -235,3 +242,9 @@ def update_plant(id):
             (*params, id),
         ).fetchone()
     return row, 200
+
+
+@app.get("/docs")
+def serve_swagger():
+    base = os.path.join(os.path.dirname(__file__), "assets")
+    return send_from_directory(base, "swagger/index.html")

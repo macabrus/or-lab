@@ -1,0 +1,127 @@
+openapi: 3.0.3
+info:
+  title: Biljke - OpenAPI 3.0
+  description: |-
+    Skup podataka o biljkama
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: bernard.crnkovic@fer.hr
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost:8080/api
+tags:
+  - name: plant
+    description: Metode za upravljanje skupom podataka
+paths:
+  /plant:
+    get:
+      tags:
+        - plant
+      summary: List all plants
+      description: List all plants in the dataset.
+      operationId: getPlants
+      responses:
+        '200':
+          description: Successful
+    post:
+      tags:
+        - plant
+      summary: Add a new plant
+      description: Add a new pet to the dataset.
+      operationId: addPlant
+      requestBody:
+        description: Add new plant to the dataset
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePlant'
+        required: true
+      responses:
+        '200':
+          description: Successful creation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request format
+  /plant/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - plant
+      summary: Fetch plant by id
+      description: Fetches plant by specified id in URL path
+      responses:
+        '200':
+          description: Successful creation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    delete:
+      tags:
+        - plant
+      summary: Delete plant by id
+      description: Deletes plant by specified id in URL path
+      responses:
+        '200':
+          description: Successful deletion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+    patch:
+      tags:
+        - plant
+      summary: Update plant by id
+      description: Updates plant by specified id in URL path
+      responses:
+        '200':
+          description: Successful update on a plant in dataset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+components:
+  schemas:
+    CreatePlant:
+      type: object
+    Plant:
+      type: object
+    ApiResponse:
+      type: object
+  requestBodies:
+    CreatePlant:
+      description: Pet object that needs to be added to the store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreatePlant'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/CreatePlant'
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

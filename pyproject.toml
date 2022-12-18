@@ -12,6 +12,8 @@ cattrs = "^22.2.0"
 pre-commit = "^2.20.0"
 flask = "^2.2.2"
 flask-cors = "^3.0.10"
+authlib = "^1.2.0"
+python-dotenv = "^0.21.0"
 
 [tool.poetry.scripts]
 lab = "lab.scripts:start"
@@ -20,10 +22,6 @@ lab = "lab.scripts:start"
 black = "^22.10.0"
 flake8 = "^5.0.4"
 isort = "^5.10.1"
-
-# [tool.isort]
-# profile = "black"
-# line_length = 79
 
 [build-system]
 requires = ["poetry-core"]

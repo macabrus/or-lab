@@ -11,6 +11,15 @@ Ovaj skup podataka sadrži informacije o biljkama i nekim njihovim svojstvima:
 - `is_edible` - istinosna vrijednost koja označava je li biljka jestiva za ljude
 - `water_content` - decimalna vrijednost u rasponu od 0 do 1 koja označava prosječan udio vode u biljci
 
+### Dokumentacija
+OpenAPI dokumentacija backenda dostupna je u `docs/` direktoriju.
+Korišten je predložak `https://github.com/swagger-api/swagger-ui`.
+Možemo ju servirati i pregledavati u web pregledniku sa:
+```bash
+cd docs && python -m http.server 8000
+```
+
+
 ### Pokretanje projekta
 ```bash
 poetry shell
@@ -59,6 +68,19 @@ Tada se može pokrenuti s:
 lab web      # default port 80
 lab web 8080 # specify port
 ```
+
+### Autentifikacija
+Možemo se prijaviti u autentifikaciju s Google računom (ili nekim od dostupnih providera)
+kroz Auth0 OAuth2 shemu. Međutim, često OAuth2 provideri rade probleme s
+portovima u domenama (brišu ih ili ignoriraju) te zahtjevaju jednostavan
+naziv HTTP destinacije. Možemo taj problem rješiti s jednostavnim lokalnim
+caddy reverse proxyjem koji prosljeđuje dekriptirane veze na stvarni lokalni
+port našeg backenda:
+```bash
+caddy reverse-proxy --from 127.0.0.1:443 --to 127.0.0.1:8080
+```
+Za implementaciju je korištena vrlo jednostavna `authlib` python knjižnica koja
+interno koristi `crpytography` za validaciju tokena.
 
 ### Kodiranje URI parametara
 REST upite možemo testirati s `curl`. Parametre upita u URL-u
