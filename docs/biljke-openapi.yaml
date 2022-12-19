@@ -98,34 +98,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-definitions:
-  Plant:
-    type: object
-    properties:
-      name:
-        type: string
-      petal_count:
-        type: string
-      lifespan_years:
-        type: number
-      soil_ph_min:
-        type: number
-      soil_ph_max:
-        type: number
-      temp_min:
-        type: number
-      temp_max:
-        type: number
-      is_edible:
-        type: boolean
-      water_content:
-        type: number
 components:
   schemas:
+    Plant:
+      type: object
+      properties:
+        name:
+          type: string
+        petal_count:
+          type: string
+        lifespan_years:
+          type: number
+        soil_ph_min:
+          type: number
+        soil_ph_max:
+          type: number
+        temp_min:
+          type: number
+        temp_max:
+          type: number
+        is_edible:
+          type: boolean
+        water_content:
+          type: number
     UpdatePlant:
-      - $ref: '#/definitions/Plant'
+      allOf:
+        - $ref: '#/components/schemas/Plant'
     CreatePlant:
-      - $ref '#/definitions/Plant'
+      allOf:
+        - $ref: '#/components/schemas/Plant'
     ApiResponse:
       type: object
       required:
@@ -138,7 +139,8 @@ components:
         message:
           type: string
         detail:
-          type: object
+          anyOf:
+            - $ref: '#/components/schemas/Plant'
   requestBodies:
     CreatePlant:
       description: Pet object that needs to be added to the store
