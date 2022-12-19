@@ -51,6 +51,10 @@ paths:
                 $ref: '#/components/schemas/ApiResponse'
         '400':
           description: Bad request format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
   /plant/{id}:
     parameters:
       - in: path
@@ -94,14 +98,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+definitions:
+  Plant:
+    type: object
+    properties:
+      name:
+        type: string
+      petal_count:
+        type: string
+      lifespan_years:
+        type: number
+      soil_ph_min:
+        type: number
+      soil_ph_max:
+        type: number
+      temp_min:
+        type: number
+      temp_max:
+        type: number
+      is_edible:
+        type: boolean
+      water_content:
+        type: number
 components:
   schemas:
+    UpdatePlant:
+      - $ref: '#/definitions/Plant'
     CreatePlant:
-      type: object
-    Plant:
-      type: object
+      - $ref '#/definitions/Plant'
     ApiResponse:
       type: object
+      required:
+        - status
+        - message
+        - detail
+      properties:
+        status:
+          type: number
+        message:
+          type: string
+        detail:
+          type: object
   requestBodies:
     CreatePlant:
       description: Pet object that needs to be added to the store
