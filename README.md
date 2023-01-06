@@ -74,7 +74,7 @@ Možemo se prijaviti u autentifikaciju s Google računom (ili nekim od dostupnih
 kroz Auth0 OAuth2 shemu. Međutim, često OAuth2 provideri rade probleme s
 portovima u domenama (brišu ih ili ignoriraju) te zahtjevaju jednostavan
 naziv HTTP destinacije. Taj se problem može rješiti s jednostavnim lokalnim
-caddy reverse proxyjem:
+caddy reverse proxyjem koji propušta konekcije do našeg frontenda i backenda:
 ```bash
 caddy --config Caddyfile run
 ```
