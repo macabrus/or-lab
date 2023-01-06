@@ -1,5 +1,5 @@
 import { useLocation } from "@solidjs/router";
-import { Accessor, createContext, createEffect, createResource, createSignal, Resource, Signal, useContext } from "solid-js";
+import { createContext, createEffect, createResource, Resource, useContext } from "solid-js";
 
 
 interface Profile {

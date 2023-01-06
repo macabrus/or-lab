@@ -329,7 +329,7 @@ def logout():
         + urlencode(
             {
                 # url_for("home", _external=True, _scheme="https"),
-                "returnTo": "https://127.0.0.1",
+                "returnTo": "https://127.0.0.1/home",
                 "client_id": env.get("AUTH0_CLIENT_ID"),
             },
             quote_via=quote_plus,
