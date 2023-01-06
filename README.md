@@ -73,9 +73,8 @@ lab web 8080 # specify port
 Možemo se prijaviti u autentifikaciju s Google računom (ili nekim od dostupnih providera)
 kroz Auth0 OAuth2 shemu. Međutim, često OAuth2 provideri rade probleme s
 portovima u domenama (brišu ih ili ignoriraju) te zahtjevaju jednostavan
-naziv HTTP destinacije. Možemo taj problem rješiti s jednostavnim lokalnim
-caddy reverse proxyjem koji prosljeđuje dekriptirane veze na stvarni lokalni
-port našeg backenda:
+naziv HTTP destinacije. Taj se problem može rješiti s jednostavnim lokalnim
+caddy reverse proxyjem:
 ```bash
 caddy --config Caddyfile run
 ```
