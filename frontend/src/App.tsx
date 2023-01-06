@@ -10,7 +10,7 @@ const Schema = lazy(() => import("./pages/Schema"));
 const Profile = lazy(() => import('./pages/Profile'));
 
 const App: Component = () => {
-  const user = useProfile()
+  const user = useProfile();
   return (<>
     <nav>
       <A href="/home">Home</A>

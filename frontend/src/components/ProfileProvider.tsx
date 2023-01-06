@@ -1,5 +1,5 @@
 import { useLocation } from "@solidjs/router";
-import { createContext, createEffect, createResource, Resource, useContext } from "solid-js";
+import { Accessor, createContext, createEffect, createResource, createSignal, Resource, useContext } from "solid-js";
 
 
 interface Profile {
@@ -12,6 +12,7 @@ export const ProfileContext = createContext<any>();
 
 export function ProfileProvider(props: any) {
     const loc = useLocation();
+    const [user, setUser] = createSignal<Profile | null>(null);
     const [profile, {refetch}] = createResource<Profile>(async () => {
         const res = await fetch('/api/me');
         const json = await res.json();
@@ -22,24 +23,25 @@ export function ProfileProvider(props: any) {
         if (!json && !publicRoutes.find(r => r.startsWith(loc.pathname))) {
             window.location.href = "/api/login";
         }
-        return {
+        const u = {
             avatar: json?.userinfo?.picture,
             name: json?.userinfo?.name,
             email: json?.userinfo?.email,
         }
+        setUser((old) => json && u);
+        return u;
     });
-
 
     createEffect(() => {
         loc.pathname;
         refetch();
     });
 
-    return <ProfileContext.Provider value={profile}>
+    return <ProfileContext.Provider value={() => user()}>
         {props.children}
     </ProfileContext.Provider>
 }
 
-export function useProfile(): Resource<Profile> {
+export function useProfile(): Accessor<Profile> {
     return useContext(ProfileContext);
 }

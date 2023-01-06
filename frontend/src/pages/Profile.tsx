@@ -4,7 +4,6 @@ import { useProfile } from "../components/ProfileProvider";
 
 export default function Profile() {
     const user = useProfile();
-    console.log(user)
 
     return <>
         <h1>User Profile</h1>
