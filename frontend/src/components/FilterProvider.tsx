@@ -5,7 +5,7 @@ import { isInteger } from "lodash-es";
 
 
 async function fetchProperties() {
-  const res = await fetch('http://localhost:8080/api/schema/plant');
+  const res = await fetch('/api/schema/plant');
   const json = await res.json();
   return json;
 }
@@ -62,7 +62,7 @@ export async function fetchResource(params: any) {
 export function downloadFilteredData(format: string, queryParams: any) {
   const query = encodeQueryParams(queryParams);
   const link = document.createElement('a');
-  link.href = `http://localhost:8080/download/${format}?${query}`;
+  link.href = `/api/download/${format}?${query}`;
   console.log(`Link: ${link.href}`);
   link.click();
 }

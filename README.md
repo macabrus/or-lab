@@ -53,7 +53,7 @@ grep -vx -f schema.sql dump.sql > data.sql
 lab schema drop
 ```
 
-### Frontend i backend (TODO)
+### Frontend i backend
 Potrebno je pripremiti production build frontenda:
 ```bash
 cd frontend
@@ -77,7 +77,7 @@ naziv HTTP destinacije. Možemo taj problem rješiti s jednostavnim lokalnim
 caddy reverse proxyjem koji prosljeđuje dekriptirane veze na stvarni lokalni
 port našeg backenda:
 ```bash
-caddy reverse-proxy --from 127.0.0.1:443 --to 127.0.0.1:8080
+caddy --config Caddyfile run
 ```
 Za implementaciju je korištena vrlo jednostavna `authlib` python knjižnica koja
 interno koristi `crpytography` za validaciju tokena.

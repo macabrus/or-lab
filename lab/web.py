@@ -1,18 +1,23 @@
 import json
-import os
 from csv import DictWriter
+from functools import wraps
 from io import StringIO
+from os import environ as env
+from urllib.parse import quote_plus, urlencode
 
 from attr import define, fields
+from authlib.integrations.flask_client import OAuth
 from cattrs import structure, unstructure
+from dotenv import find_dotenv, load_dotenv
+from flask import request  # send_from_directory,
 from flask import (
     Flask,
     Response,
-    request,
-    send_from_directory,
+    jsonify,
+    redirect,
+    session,
     stream_with_context,
 )
-from flask_cors import CORS
 
 from lab.db import make_conn, open_txn
 from lab.models import CreatePlant, Plant, UpdatePlant
@@ -20,8 +25,28 @@ from lab.sql import INSERT_PLANT_SQL
 from lab.utils import astuple, decode_query_object
 
 app = Flask(__name__)
+
+ENV_FILE = find_dotenv()
+if ENV_FILE:
+    load_dotenv(ENV_FILE)
+
+app.secret_key = env.get("APP_SECRET_KEY")
+app.config["SERVER_NAME"] = "127.0.0.1"
+
+oauth = OAuth(app)
+
+oauth.register(
+    "auth0",
+    client_id=env.get("AUTH0_CLIENT_ID"),
+    client_secret=env.get("AUTH0_CLIENT_SECRET"),
+    client_kwargs={
+        "scope": "openid profile email",
+    },
+    server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}'
+    "/.well-known/openid-configuration",
+)
 # enable cors when serving from dev server in nodejs
-CORS(app, origins=["http://localhost:3000", "http://localhost:8000"])
+# CORS(app, origins=["http://localhost:3000", "http://localhost:8000"])
 
 
 def make_where_clause(filter_obj):
@@ -73,7 +98,7 @@ def make_order_clause(order_obj):
     return ", ".join(order_by)
 
 
-@app.get("/api/schema/plant")
+@app.get("/schema/plant")
 def get_schema():
     return list(field_names(Plant))
 
@@ -169,7 +194,27 @@ def get_filter_sql(args: FilterArgs):
     return sql, params
 
 
-@app.get("/api/plant")
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user", None) is None:
+            return (
+                "Unauthorized",
+                401,
+            )  # redirect(url_for('login', next=request.url))
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
+# require_oauth = ResourceProtector()
+
+# only bearer token is supported currently
+# require_oauth.register_token_validator(MyBearerTokenValidator())
+
+
+@app.get("/plant")
+@login_required
 def get_plants():
     args = parse_filter_args(request.args)
     sql, params = get_filter_sql(args)
@@ -180,7 +225,7 @@ def get_plants():
         return db.execute(sql, params).fetchall(), 200
 
 
-@app.get("/api/plant/<int:id>")
+@app.get("/plant/<int:id>")
 def get_plant(id):
     sql = "select * from plant where rowid = ?"
     with make_conn("test.db") as db:
@@ -194,7 +239,12 @@ def get_plant(id):
     return row, 200
 
 
-@app.post("/api/plant")
+@app.route("/me")
+def me():
+    return jsonify(session.get("user", None))
+
+
+@app.post("/plant")
 def add_plant():
     new_plant = structure(request.json, CreatePlant)
     print(new_plant)
@@ -210,7 +260,7 @@ def add_plant():
     }, 201
 
 
-@app.delete("/api/plant/<int:id>")
+@app.delete("/plant/<int:id>")
 def remove_plant(id):
     with make_conn("test.db") as db:
         row = db.execute(
@@ -225,7 +275,7 @@ def remove_plant(id):
     return {"status": 200, "message": "Removed plant", "details": row}, 200
 
 
-@app.patch("/api/plant/<int:id>")
+@app.patch("/plant/<int:id>")
 def update_plant(id):
     update_dto = structure(request.json, UpdatePlant)
     clause, params = make_set_clause(update_dto)
@@ -241,10 +291,57 @@ def update_plant(id):
             f"update plant set {clause} where id = ? returning *",
             (*params, id),
         ).fetchone()
-    return row, 200
+    return {
+        "status": 200,
+        "message": "Resource updated successfully",
+        "details": row,
+    }, 200
 
 
-@app.get("/docs")
-def serve_swagger():
-    base = os.path.join(os.path.dirname(__file__), "assets")
-    return send_from_directory(base, "swagger/index.html")
+@app.route("/callback", methods=["GET", "POST"])
+def callback():
+    token = oauth.auth0.authorize_access_token()
+    print(token)
+    session["user"] = token
+    return redirect("/")
+
+
+@app.route("/login")
+def login():
+    return oauth.auth0.authorize_redirect(
+        # url_for("callback", _external=True, _scheme="https")
+        redirect_uri="https://127.0.0.1/api/callback"
+    )
+
+
+@app.route("/frontend")
+def home():
+    return redirect("/home")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    s = (
+        "https://"
+        + env.get("AUTH0_DOMAIN")
+        + "/v2/logout?"
+        + urlencode(
+            {
+                # url_for("home", _external=True, _scheme="https"),
+                "returnTo": "https://127.0.0.1",
+                "client_id": env.get("AUTH0_CLIENT_ID"),
+            },
+            quote_via=quote_plus,
+        )
+    )
+    print(s)
+    return redirect(s)
+
+
+# @app.route('/docs/', strict_slashes=False)
+# @app.get("/docs/<path:path>")
+# def serve_swagger(path=None):
+#     print(path)
+#     print(os.getcwd())
+#     return send_from_directory('docs')

@@ -85,7 +85,7 @@ function DownloadButtons(props: any) {
 export default function PlantView(props: any) {
   return <>
     <FilterProvider
-      url='http://localhost:8080'
+      url=''
       resource='plant'>
         <PlantForm/>
         <Table/>

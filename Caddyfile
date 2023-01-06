@@ -1,0 +1,15 @@
+{
+    email myemail@mymaindomain.com
+    http_port 80
+    https_port 443
+}
+
+127.0.0.1 {
+    handle_path /api* {
+        reverse_proxy http://localhost:8080
+    }
+
+    route {
+        reverse_proxy http://localhost:3000
+    }
+}
